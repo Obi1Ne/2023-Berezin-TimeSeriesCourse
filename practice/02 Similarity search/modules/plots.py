@@ -239,8 +239,53 @@ def plot_bestmatch_results(ts, query, bestmatch_results):
         The output data found by the best match algorithm.  
     """
 
-    # INSERT YOUR CODE
+    ts_len = ts.shape[0]
+    query_len = query.shape[0]
 
+    n_matches = len(bestmatch_results)
+
+    fig = make_subplots(rows=1, cols=2, column_widths=[0.1, 0.9], subplot_titles=("Query", "Time Series"), horizontal_spacing=0.04)
+
+    fig.add_trace(
+      go.Scatter(x=np.arange(query_len), y=query, line=dict(color='red')),
+      row=1, col=1
+    )
+
+    fig.add_trace(
+      go.Scatter(x=np.arange(ts_len), y=ts, line=dict(color='blue')),
+      row=1, col=2
+    )
+
+    for i, start_idx in enumerate(bestmatch_results['index']):
+        end_idx = start_idx + query_len
+        fig.add_trace(
+            go.Scatter(x=np.arange(start_idx, end_idx), y=ts[start_idx:end_idx], line=dict(color=px.colors.qualitative.Plotly[1])),
+            row=1, col=2
+        )
+
+    fig.update_annotations(font=dict(size=24, color='black'))
+
+    axis_settings = dict(
+        showgrid=False,
+        linecolor='#000',
+        ticks="outside",
+        tickfont=dict(size=18, color='black'),
+        linewidth=1,
+        tickwidth=1,
+        mirror=True
+    )
+
+    fig.update_xaxes(**axis_settings)
+    fig.update_yaxes(**axis_settings, zeroline=False)
+
+    fig.update_layout(
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor='rgba(0,0,0,0)',
+        showlegend=False,
+        title_x=0.5
+    )
+
+    fig.show(renderer="colab")
 
 def pie_chart(labels, values, plot_title='Pie chart'):
     """

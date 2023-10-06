@@ -127,10 +127,8 @@ class NaiveBestMatchFinder(BestMatchFinder):
     """
     Naive Best Match Finder.
     """
-    
     def __init__(self, ts=None, query=None, exclusion_zone=1, top_k=3, normalize=True, r=0.05):
         super().__init__(ts, query, exclusion_zone, top_k, normalize, r)
-
 
     def perform(self):
         """
@@ -149,11 +147,12 @@ class NaiveBestMatchFinder(BestMatchFinder):
             excl_zone = 0
         else:
             excl_zone = int(np.ceil(m / self.excl_zone_denom))
-        
-        # INSERT YOUR CODE
+ 
+        distance = [DTW_distance(self.ts_data[i], self.query, self.r) for i in range(N)]
 
+        self.bestmatch = self._top_k_match(distance, m, bsf, excl_zone)
+              
         return self.bestmatch
-
 
 class UCR_DTW(BestMatchFinder):
     """
@@ -238,8 +237,6 @@ class UCR_DTW(BestMatchFinder):
         self.lb_Kim_num = 0
         self.lb_KeoghQC_num = 0
         self.lb_KeoghCQ_num = 0
-        
-        # INSERT YOUR CODE
 
         return {'index' : self.bestmatch['index'],
                 'distance' : self.bestmatch['distance'],
