@@ -66,13 +66,37 @@ def meter_swapping_detection(heads, tails, house_idx, m):
     min_score : dict
        Time series pair with minimum swap-score.
     """
-
     eps = 0.001
 
     min_score = {}
 
-    # INSERT YOUR CODE
-    
+    min_score = None
+    eps = 0.001
+
+    for i in house_idx:
+        H_i = heads[f'H_{i}'].iloc[:, 0].astype(float)
+        T_i = tails[f'T_{i}'].iloc[:, 0].astype(float)
+        
+        # Calculate matrix profile for T_i
+        mp_i = compute_mp(T_i, m=m, ts2=H_i, exclusion_zone=None)
+        mp_i_min = np.nanmin(mp_i['mp']) + eps
+
+        for j in house_idx:
+            T_j = tails[f'T_{j}'].iloc[:, 0].astype(float)
+
+            # Calculate matrix profile for T_j
+            mp_j = compute_mp(T_j, m=m, ts2=H_i)
+            mp_j_min = np.nanmin(mp_j['mp'])
+            mp_j['mp'][mp_j['mp'] == np.inf] = np.nan
+
+            score = mp_j_min / mp_i_min
+
+            # Code to record best score
+            if min_score is None:
+                min_score = {'i': i, 'j': j, 'score': score, 'mp_j': mp_j}
+            elif score < min_score['score']:
+                min_score = {'i': i, 'j': j, 'score': score, 'mp_j': mp_j}
+
     return min_score
 
 
